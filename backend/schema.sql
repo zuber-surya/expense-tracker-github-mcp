@@ -11,7 +11,11 @@ CREATE TABLE IF NOT EXISTS expenses (
   category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
   expense_date DATE NOT NULL DEFAULT CURRENT_DATE,
   notes TEXT,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  -- Recurring expense fields
+  recurrence_interval INTEGER,          -- null for one-time
+  recurrence_period VARCHAR(10),        -- 'day', 'week', 'month', 'year'
+  recurrence_end_date DATE              -- optional end date for recurrence
 );
 
 INSERT INTO categories (name) VALUES

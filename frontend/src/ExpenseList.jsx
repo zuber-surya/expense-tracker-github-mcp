@@ -14,6 +14,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }) {
           <th>Category</th>
           <th>Amount</th>
           <th>Notes</th>
+          <th>Recur</th>
           <th></th>
         </tr>
       </thead>
@@ -25,6 +26,7 @@ export default function ExpenseList({ expenses, onEdit, onDelete }) {
             <td>{e.category_name || 'Uncategorized'}</td>
             <td>${Number(e.amount).toFixed(2)}</td>
             <td className="notes-cell">{e.notes}</td>
+            <td>{e.recurrence_interval !== null ? 'Yes' : ''}</td>
             <td className="row-actions">
               <button onClick={() => onEdit(e)}>Edit</button>
               <button className="danger" onClick={() => onDelete(e.id)}>

@@ -48,7 +48,8 @@ app.get('/api/expenses', async (req, res) => {
 
     const query = `
       SELECT e.id, e.title, e.amount, e.expense_date, e.notes,
-             e.category_id, c.name AS category_name
+             e.category_id, c.name AS category_name,
+             e.recurrence_interval, e.recurrence_period, e.recurrence_end_date
       FROM expenses e
       LEFT JOIN categories c ON c.id = e.category_id
       ${where}
@@ -111,16 +112,16 @@ app.get('/api/expenses/summary', async (req, res) => {
 // Create expense
 app.post('/api/expenses', async (req, res) => {
   try {
-    const { title, amount, category_id, expense_date, notes } = req.body;
+    const { title, amount, category_id, expense_date, notes, recurrence_interval, recurrence_period, recurrence_end_date } = req.body;
     if (!title || amount === undefined || amount === null) {
       return res.status(400).json({ error: 'title and amount are required' });
     }
 
     const result = await pool.query(
-      `INSERT INTO expenses (title, amount, category_id, expense_date, notes)
-       VALUES ($1, $2, $3, COALESCE($4, CURRENT_DATE), $5)
+      `INSERT INTO expenses (title, amount, category_id, expense_date, notes, recurrence_interval, recurrence_period, recurrence_end_date)
+       VALUES ($1, $2, $3, COALESCE($4, CURRENT_DATE), $5, $6, $7, $8)
        RETURNING *`,
-      [title, amount, category_id || null, expense_date || null, notes || null]
+      [title, amount, category_id || null, expense_date || null, notes || null, recurrence_interval || null, recurrence_period || null, recurrence_end_date || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -133,14 +134,15 @@ app.post('/api/expenses', async (req, res) => {
 app.put('/api/expenses/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, amount, category_id, expense_date, notes } = req.body;
+    const { title, amount, category_id, expense_date, notes, recurrence_interval, recurrence_period, recurrence_end_date } = req.body;
 
     const result = await pool.query(
       `UPDATE expenses
-       SET title = $1, amount = $2, category_id = $3, expense_date = $4, notes = $5
-       WHERE id = $6
+       SET title = $1, amount = $2, category_id = $3, expense_date = $4, notes = $5,
+           recurrence_interval = $6, recurrence_period = $7, recurrence_end_date = $8
+       WHERE id = $9
        RETURNING *`,
-      [title, amount, category_id || null, expense_date, notes || null, id]
+      [title, amount, category_id || null, expense_date, notes || null, recurrence_interval || null, recurrence_period || null, recurrence_end_date || null, id]
     );
 
     if (result.rows.length === 0) {

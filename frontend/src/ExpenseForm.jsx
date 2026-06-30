@@ -6,6 +6,9 @@ const emptyForm = {
   category_id: '',
   expense_date: new Date().toISOString().slice(0, 10),
   notes: '',
+  recurrence_interval: '',
+  recurrence_period: '',
+  recurrence_end_date: '',
 };
 
 export default function ExpenseForm({ categories, initialData, onSave, onCancel }) {
@@ -20,6 +23,9 @@ export default function ExpenseForm({ categories, initialData, onSave, onCancel 
         category_id: initialData.category_id || '',
         expense_date: initialData.expense_date?.slice(0, 10) || emptyForm.expense_date,
         notes: initialData.notes || '',
+        recurrence_interval: initialData.recurrence_interval ?? '',
+        recurrence_period: initialData.recurrence_period || '',
+        recurrence_end_date: initialData.recurrence_end_date || '',
       });
     } else {
       setForm(emptyForm);
@@ -35,11 +41,15 @@ export default function ExpenseForm({ categories, initialData, onSave, onCancel 
     e.preventDefault();
     setSubmitting(true);
     try {
-      await onSave({
+      const submitData = {
         ...form,
         amount: parseFloat(form.amount),
         category_id: form.category_id || null,
-      });
+        recurrence_interval: form.recurrence_interval ? parseInt(form.recurrence_interval, 10) : null,
+        recurrence_period: form.recurrence_period || null,
+        recurrence_end_date: form.recurrence_end_date || null,
+      };
+      await onSave(submitData);
       if (!initialData) setForm(emptyForm);
     } finally {
       setSubmitting(false);
@@ -93,6 +103,45 @@ export default function ExpenseForm({ categories, initialData, onSave, onCancel 
         Notes
         <textarea name="notes" value={form.notes} onChange={handleChange} rows={2} />
       </label>
+
+      <fieldset className="recurrence-fields">
+        <legend>Recurrence (optional)</legend>
+        <div>
+          <label>
+            Repeats every:
+            <input
+              name="recurrence_interval"
+              type="number"
+              min="1"
+              value={form.recurrence_interval}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Period:
+            <select name="recurrence_period" value={form.recurrence_period} onChange={handleChange}>
+              <option value="">None</option>
+              <option value="day">Day(s)</option>
+              <option value="week">Week(s)</option>
+              <option value="month">Month(s)</option>
+              <option value="year">Year(s)</option>
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>
+            Ends on:
+            <input
+              name="recurrence_end_date"
+              type="date"
+              value={form.recurrence_end_date}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+      </fieldset>
 
       <div className="form-actions">
         <button type="submit" disabled={submitting}>
