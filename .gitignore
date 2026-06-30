@@ -1,0 +1,15 @@
+node_modules/
+dist/
+
+# Environment variables
+.env
+.env.mcp
+backend/.env
+
+# Logs
+logs/
+*.log
+
+# Misc
+.DS_Store
+Thumbs.db

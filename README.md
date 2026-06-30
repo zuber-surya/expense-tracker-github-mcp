@@ -86,3 +86,9 @@ Serve the resulting `dist/` folder with any static host, or wire it into the Exp
 - Amounts are stored as `NUMERIC(10,2)`.
 - `category_id` is nullable; deleting a category sets related expenses to "Uncategorized" rather than deleting them.
 - For production, set proper `DATABASE_URL`/SSL options for your Postgres host (e.g. add `?sslmode=require` for managed providers like Render/Heroku/Supabase, and pass `ssl: { rejectUnauthorized: false }` in `db.js` if required).
+
+## AI editor + GitHub workflow (branch → PR → review → merge)
+
+This repo ships with a shared MCP config (`.mcp.json`) so any MCP-compatible
+AI editor can create branches, open PRs, leave reviews, and merge — directly
+from your editor. See [MCP_SETUP.md](./MCP_SETUP.md) for setup steps.
